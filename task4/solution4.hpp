@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <bits/stdc++.h>
 #include <vector>
 #include <cmath>
 #include <cstdio>
@@ -32,6 +33,7 @@ struct Chunk {
 class Block {
     public:
         // requests for a new chunk when needed
+        int max_chunks = 8;
         size_t num_chunks;
         size_t block_size;
         Chunk* alloc_ptr = nullptr;
@@ -41,25 +43,29 @@ class Block {
         Block* next;
 
         // allocates a new block from OS
-        Block(size_t numChunks, int id, Block* block_begin); // create individual pools - sometime after initialisation
+        Block(size_t numChunks, int id, Block* block_begin, bool flag); // create individual pools - sometime after initialisation
         ~Block(); // destroy individual pools
-        Chunk* pool_get();
-        void pool_free(Chunk* ret);
 };
 
 // created only once during the program
 class PoolAllocator {
-    // allocates blocks
-    size_t num_blocks;
-    size_t max_num_blocks = 4; // max_num_pools
-    Block* pool_begin;
-    size_t total_size;
-    vector<Block*> block_begin_pointers;
-
     public:
+        // allocates blocks
+        size_t num_blocks;
+        size_t max_num_blocks = 8; // max_num_pools
+        Block* pool_begin;
+        size_t total_size;
+        vector<Block*> block_begin_pointers;
+        Block* current_block;
         PoolAllocator(size_t blocks, size_t numChunks); // alias for create_pool of the question
         ~PoolAllocator(); // alias for destroy_pools
+        Chunk* pool_get();
+        void pool_free(Chunk* ret);
 };
 
 template <typename T>
 void checkPointerType();
+
+Block* allocate_additional_pools(PoolAllocator* pl, int num_chunks_in_each_block, int num_blocks);
+
+Chunk* allocatate_additional_chunks(PoolAllocator *pl, Block* bl, int num_chunks_in_each_block);

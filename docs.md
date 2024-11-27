@@ -80,12 +80,14 @@ Implementing a pool allocator that gives the following functionality:
 * The `PoolAllocator` object is like the management entity that provides the API to create the memory pool.
 * Current functionality supports mapping memory once (during initialisation).
 * The functions `pool_get` and `pool_free` are implemented, but haven't been tested.
+* Pre-defined maximum numbers of chunks and blocks in the pool.
 
 ### Improvements/Future scope
 * As mentioned above, the pools are allocated once during the lifetime of the program, i.e., during initialisation. Provide functionality for allocating `blocks` at other places in the main function. Requires minor changes in the code.
 * Test `pool_get` and `pool_free` function.
 * Use template metaprogramming to determine the datatype of the stored data during runtime. Currently `__uint64_t data` is being stored.
-* There are some issues with the Block class destructor. Since only the initial memory is mapped by `mmap`, `munmap` will not be able to deallocate memory in this case.
+* `current_block` points to the last block instead of the first one - problem here.
+* The blocks are getting allocated and deallocated correctly, but there are some problems with the block and chunk placements - debug that.
 
 ### Compile and Run
 `cd task4`\
